@@ -1,0 +1,49 @@
+name: Continuous Delivery
+
+on:
+    push:
+        branches: [ "main" ]
+        paths:
+          - 'Dockerfile'
+          - 'install.sh'
+          - 'entrypoint.sh'
+          - '.github/workflows/continuous-delivery.yml'
+    pull_request:
+        branches: [ "main" ]
+        paths:
+          - 'Dockerfile'
+          - 'install.sh'
+          - 'entrypoint.sh'
+          - '.github/workflows/continuous-delivery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+    docker-build-push:
+        runs-on: ubuntu-latest
+        steps:
+        - 
+            name: Create current version based on time
+            id: versioning
+            run: |
+                echo "::set-output name=version::$(date +'%Y-%m-%d' --utc)"
+        - 
+            name: Set up QEMU
+            uses: docker/setup-qemu-action@v3
+        - 
+            name: Set up Docker Buildx
+            uses: docker/setup-buildx-action@v3
+        - 
+            name: Login to Docker Hub
+            uses: docker/login-action@v3
+            with:
+                username: ${{ secrets.DOCKER_USERNAME }}
+                password: ${{ secrets.DOCKER_PASSWORD }}
+        - 
+            name: Build and push
+            uses: docker/build-push-action@v5
+            with:
+                push: true
+                tags: ${{secrets.DOCKER_USERNAME}}/dev-image-base:${{steps.versioning.outputs.version}}, ${{secrets.DOCKER_USERNAME}}/dev-image-base:latest
+                
