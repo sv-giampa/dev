@@ -45,5 +45,5 @@ jobs:
             uses: docker/build-push-action@v5
             with:
                 push: true
-                tags: ${{secrets.DOCKER_USERNAME}}/dev-image-base:${{steps.versioning.outputs.version}}, ${{secrets.DOCKER_USERNAME}}/dev-image-base:latest
+                tags: ${{secrets.DOCKER_USERNAME}}/dev-base:${{steps.versioning.outputs.version}}, ${{secrets.DOCKER_USERNAME}}/dev-base:latest
                 
