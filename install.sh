@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# custom install script used to install additional dependencies
+# custom install script used to install additional dependencies. Useful for customizing the image.
 
-# apk add ...
+# /apt_install <packages>
 
-# pip install ...
+# pip install <packages>
