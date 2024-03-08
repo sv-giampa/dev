@@ -41,9 +41,12 @@ jobs:
                 username: ${{ secrets.DOCKER_USERNAME }}
                 password: ${{ secrets.DOCKER_PASSWORD }}
         - 
-            name: Build and push
+            name: Build and push Alpine-based Image
             uses: docker/build-push-action@v5
             with:
                 push: true
-                tags: ${{secrets.DOCKER_USERNAME}}/dev-image-base:${{steps.versioning.outputs.version}}, ${{secrets.DOCKER_USERNAME}}/dev-image-base:latest
+                file: Dockerfile
+                tags: |
+                    ${{secrets.DOCKER_USERNAME}}/dev:${{steps.versioning.outputs.version}},
+                    ${{secrets.DOCKER_USERNAME}}/dev:latest
                 

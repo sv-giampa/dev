@@ -1,47 +1,50 @@
-FROM alpine:latest
+FROM ubuntu:22.04
 
 USER root
 WORKDIR /root
 
-# utilities
-RUN apk add htop
-RUN apk add screen
-RUN apk add zip
-RUN apk add nano
+COPY --chmod=777 apt_install /apt_install
 
-# network utils
-RUN apk add wget
+# install utility software packages
+RUN /apt_install software-properties-common
+RUN /apt_install inetutils-ping net-tools wget
+RUN /apt_install htop screen zip nano
+	
+# install and configure git
+RUN /apt_install git
+RUN DEBIAN_FRONTEND=noninteractive git config --global commit.gpgsign false
 
 # python
-RUN apk add python3
-RUN apk add py3-pip
+RUN /apt_install python3 python3-pip python3-venv
 RUN python3 -m pip install --upgrade pip setuptools
 
-# java
-RUN apk add gradle
-RUN apk add openjdk8
-RUN apk add openjdk17
-RUN apk add maven
+# install Open JDK 8
+RUN /apt_install openjdk-8-jdk
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/' >> ~/.bashrc
+RUN /apt_install gradle maven
 
 # install and configure git
-RUN apk add git
+RUN /apt_install git
 RUN git config --global commit.gpgsign false
 
 # configure ssh daemon
-RUN apk add openssh
+RUN /apt_install openssh-server
 RUN if ! [ -d /var/run/sshd ]; then mkdir /var/run/sshd; fi
-RUN echo 'root:password' | chpasswd
+RUN echo 'root:password!!' | chpasswd
 RUN sed -i 's/^[# ]*PermitRootLogin .*$/PermitRootLogin yes/g' /etc/ssh/sshd_config
 RUN sed -i 's/^[# ]*PubkeyAuthentication .*$/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
-RUN ssh-keygen -A
-EXPOSE 22
+RUN service ssh start
 
-# create workspace directory, set it as working dir for shells and expose it as a volume
-RUN mkdir /workspace
-WORKDIR /workspace
-RUN echo "cd /workspace" >> /root/.bashrc
-RUN echo "cd /workspace" >> /root/.profile
-VOLUME ["/workspace"]
+# generate ssh keys for all instances of this image (useful for building SSH clusters on docker compose)
+RUN ssh-keygen -b 4096 -f /root/.ssh/id_rsa -N '' << y
+RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+
+# create projects directory, set it as working dir for shells
+RUN mkdir /projects
+WORKDIR /projects
+RUN echo "cd /projects" >> /root/.bashrc
+RUN echo "cd /projects" >> /root/.profile
 
 # executes the optional install script
 COPY ./install.sh /install.sh
