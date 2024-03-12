@@ -28,7 +28,9 @@ This image comes with a default working directory located at /projects. The idea
 This image is useful to be used with tools and IDEs that allow to manage remote container connections, like VSCode. The best way to proceed is to create a virtual environment into the project directory from the container and install all necessary Python libraries in it. In this way, the installed libraries will persist among container restarts. Note that this image comes without any sort of Python package.
 
 ## SSH daemon
-This image comes with a preconfigured SSH daemon
+This image comes with a preconfigured SSH daemon running as default command for container. The SSH daemon has been used by me many times for setting up development container clusters, for testing distributed environments which require SSH passwordless access to the worker nodes. As it can be seen in the Dockerfile, the SSH daemon has a defaut access password for root, i.e. 'password'. Public key authentication (passwordless) and root login are enabled by default. These settings are not for production purposes, obviously. 
+
+NOTE: If SSH is needed in production, disable SSH password login and peraphs root login, too.
 
 ## Docker Hub availability
 The latest version of this image, built through GitHub Actions from this repository, is available on the Docker Hub at svgiampa/dev.
@@ -82,7 +84,7 @@ The following Docker-Compose allows to create the same container from the releas
             - driver: nvidia
               capabilities: [gpu]
 
-## Little survey on nVidia CUDA integration
+## Notes on nVidia CUDA integration
 For accessing CUDA technology from within the container you conceptually need to do the following 3 steps:
 
 1. Install nVidia drivers into the host system;
@@ -97,4 +99,4 @@ More specifically, for the third step, here is an example of what I have done fo
 
 This command installs the official TensorFlow and CUDA libraries for Python. At the end of the installation you should be capable of running Keras model training on GPU without any other effort.
 
-NB: at the moment this is probably the only way for using latest TensorFlow releases (>2.10) on CUDA from Windows OS by using Docker Desktop with WSL2 integration, that is exactly my case.
+NOTE: at the moment this is probably the only way for using latest TensorFlow releases (>2.10) on CUDA from Windows OS by using Docker Desktop with WSL2 integration, that is exactly my case.
