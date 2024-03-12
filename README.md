@@ -1,5 +1,5 @@
 # Python and Java development image
-Base image for Python and Java software development. This image is based on Ubuntu Docker image.
+Base image for Python and Java software development. Based on Ubuntu base Docker image, I built this image for use in my development projects.
 
 # Delivered software
 This image delivers some software useful for development of Java and Python projects.
