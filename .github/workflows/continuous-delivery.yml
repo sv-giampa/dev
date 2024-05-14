@@ -31,7 +31,7 @@ on:
         - '.github/workflows/continuous-delivery.yml'
 
 permissions:
-  contents: read
+    contents: read
 
 jobs:
     docker-build-push:
@@ -55,7 +55,7 @@ jobs:
                 username: ${{ secrets.DOCKER_USERNAME }}
                 password: ${{ secrets.DOCKER_PASSWORD }}
         - 
-            name: Build and push Alpine-based Image
+            name: Build and push
             uses: docker/build-push-action@v5
             with:
                 push: true

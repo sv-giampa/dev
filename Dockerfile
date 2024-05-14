@@ -38,10 +38,6 @@ ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/' >> ~/.bashrc
 RUN /apt_install gradle maven
 
-# install and configure git
-RUN /apt_install git
-RUN git config --global commit.gpgsign false
-
 # Configure SSH daemon
 RUN /apt_install openssh-server
 RUN if ! [ -d /var/run/sshd ]; then mkdir /var/run/sshd; fi
@@ -64,6 +60,13 @@ RUN echo "cd /projects" >> /root/.profile
 COPY ./install.sh /install.sh
 RUN chmod 777 /install.sh
 RUN /install.sh
+
+# install Keras-GPU, pandas and numpy
+RUN pip install tensorflow[and-cuda] pandas numpy
+
+# create autorun script
+RUN touch /projects/autorun.sh
+RUN chmod 777 /projects/autorun.sh
 
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
