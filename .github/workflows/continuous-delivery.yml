@@ -41,7 +41,7 @@ jobs:
             name: Create current version based on time
             id: versioning
             run: |
-                echo "::set-output name=version::$(date +'%Y-%m-%d' --utc)"
+                echo "version=$(date +'%Y-%m-%d' --utc)" >> $GITHUB_OUTPUT
         - 
             name: Set up QEMU
             uses: docker/setup-qemu-action@v3
