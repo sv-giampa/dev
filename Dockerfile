@@ -62,7 +62,7 @@ RUN chmod 777 /install.sh
 RUN /install.sh
 
 # install Keras-GPU, pandas and numpy
-RUN pip install tensorflow[and-cuda] pandas numpy
+RUN pip install tensorflow[and-cuda]==2.16.0rc0 pandas numpy
 
 # create autorun script
 RUN touch /projects/autorun.sh
