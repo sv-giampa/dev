@@ -61,8 +61,27 @@ COPY ./install.sh /install.sh
 RUN chmod 777 /install.sh
 RUN /install.sh
 
-# install Keras-GPU, pandas and numpy
-RUN pip install tensorflow[and-cuda]==2.16.0rc0 pandas numpy
+RUN pip install pandas numpy
+
+# install tensorflow and utilities for plotting models
+RUN pip install tensorflow[and-cuda]==2.16.0rc0 pydot==1.4.2 pydotplus==2.0.2
+RUN /apt_install graphviz
+
+# install cuDNN
+RUN \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb; \
+    dpkg -i cuda-keyring_1.1-1_all.deb; \
+    /apt_install -y libcudnn8=8.9.7.29-1+cuda12.2
+
+# install CUDA
+RUN \
+    wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-ubuntu2204.pin; \
+    mv cuda-ubuntu2204.pin /etc/apt/preferences.d/cuda-repository-pin-600; \
+    wget https://developer.download.nvidia.com/compute/cuda/12.3.0/local_installers/cuda-repo-ubuntu2204-12-3-local_12.3.0-545.23.06-1_amd64.deb; \
+    dpkg -i cuda-repo-ubuntu2204-12-3-local_12.3.0-545.23.06-1_amd64.deb; \
+    cp /var/cuda-repo-ubuntu2204-12-3-local/cuda-*-keyring.gpg /usr/share/keyrings/; \
+    /apt_install -y install cuda-toolkit-12-3
+
 
 # create autorun script
 RUN touch /projects/autorun.sh
