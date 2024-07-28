@@ -62,10 +62,7 @@ RUN chmod 777 /install.sh
 RUN /install.sh
 
 RUN pip install pandas numpy matplotlib seaborn
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
-# install tensorflow and utilities for plotting models
-RUN pip install tensorflow[and-cuda]==2.16.0rc0 pydot==1.4.2 pydotplus==2.0.2
 RUN /apt_install graphviz
 
 # install cuDNN
