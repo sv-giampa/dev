@@ -12,7 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-FROM ubuntu:22.04
+FROM quay.io/jupyter/tensorflow-notebook:latest
 
 USER root
 WORKDIR /root
@@ -28,7 +28,7 @@ RUN /apt_install htop screen zip nano
 RUN /apt_install git
 RUN DEBIAN_FRONTEND=noninteractive git config --global commit.gpgsign false
 
-# intall Python
+# install Python
 RUN /apt_install python3 python3-pip python3-venv
 RUN python3 -m pip install --upgrade pip setuptools
 
@@ -61,13 +61,14 @@ COPY ./install.sh /install.sh
 RUN chmod 777 /install.sh
 RUN /install.sh
 
-RUN pip install pandas numpy matplotlib seaborn
+RUN pip install torch torchvision scikit-learn scipy umap-learn pandas numpy matplotlib seaborn rasterio
 
 RUN /apt_install graphviz
 
 # create autorun script
 RUN touch /projects/autorun.sh
 RUN chmod 777 /projects/autorun.sh
+RUN chmod 777 /projects
 
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
