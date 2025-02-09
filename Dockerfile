@@ -12,7 +12,9 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-FROM quay.io/jupyter/tensorflow-notebook:latest
+#FROM jupyter/datascience-notebook:latest
+FROM ubuntu:22.04
+#FROM jupyter/pytorch-notebook:latest
 
 USER root
 WORKDIR /root
@@ -38,7 +40,7 @@ ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/' >> ~/.bashrc
 RUN /apt_install gradle maven
 
-# Configure SSH daemon
+# # Configure SSH daemon
 RUN /apt_install openssh-server
 RUN if ! [ -d /var/run/sshd ]; then mkdir /var/run/sshd; fi
 RUN echo 'root:password!!' | chpasswd
@@ -50,20 +52,29 @@ RUN service ssh start
 RUN ssh-keygen -b 4096 -f /root/.ssh/id_rsa -N '' << y
 RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
-# create projects directory, set it as working dir for shells
-RUN mkdir /projects
-WORKDIR /projects
-RUN echo "cd /projects" >> /root/.bashrc
-RUN echo "cd /projects" >> /root/.profile
+RUN /apt_install graphviz
+RUN pip install pandas numpy matplotlib seaborn
+RUN pip install torch torchvision torchaudio
+RUN pip install scikit-learn scipy umap-learn
+RUN pip install rasterio librosa
+RUN pip install pyspark
+
+# install code-server
+RUN /apt_install curl
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+
+# # install jupyter
+# RUN pip install jupyter
 
 # executes the optional install script
 COPY ./install.sh /install.sh
 RUN chmod 777 /install.sh
 RUN /install.sh
 
-RUN pip install torch torchvision scikit-learn scipy umap-learn pandas numpy matplotlib seaborn rasterio
-
-RUN /apt_install graphviz
+# create projects directory, set it as working dir for shells
+RUN mkdir /projects
+RUN echo "cd /projects" >> /root/.bashrc
+RUN echo "cd /projects" >> /root/.profile
 
 # create autorun script
 RUN touch /projects/autorun.sh
@@ -74,3 +85,13 @@ RUN chmod 777 /projects
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
 CMD ["/entrypoint.sh"]
+
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
+
+#VOLUMES
+VOLUME [ "/root/.config/code-server" ]
+VOLUME [ "/root/.local/share/code-server" ]
+VOLUME [ "/projects" ]
+
+WORKDIR /projects

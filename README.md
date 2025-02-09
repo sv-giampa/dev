@@ -25,6 +25,14 @@ Python tools and libraries
 - Python PIP
 - Python Venv
 
+# IDE
+You can use the IDE you want for accessing the container, but the container exposes the code-server IDE on port 8889. For saving configuration and extension you need to declare volumes for the following paths:
+
+- Configuration:    /root/.config/code-server 
+- Extensions:       /root/.local/share/code-server
+
+Alternatively, you should change the /root part with the name user (i.e. /your_user) you specified for running the container.
+
 ## Projects root
 This image comes with a default working directory located at /projects. The idea is to mount the root of all projects from the host into /projects directory or, alternatively, mount each project root into a sub-directory of /projects.
 
@@ -87,20 +95,3 @@ The following Docker-Compose allows to create the same container from the releas
           devices:
             - driver: nvidia
               capabilities: [gpu]
-
-## Notes on nVidia CUDA integration
-For accessing CUDA technology from within the container you conceptually need to do the following 3 steps:
-
-1. Install nVidia drivers into the host system;
-2. Install the nvidia-container-toolkit into the host system;
-3. Install CUDA libraries into the virtual environment of your project from within the container.
-
-For the first two steps I remind you to do a simple web search, in order to find the most recent procedure and software for obtaining the integration between container and CUDA technologies.
-
-More specifically, for the third step, here is an example of what I have done for using Keras on CUDA from the container. I simply installed TensorFlow in my venv with the following command, as it is specified on the official web site of TensorFlow:
-
-    pip install tensorflow[and-cuda]
-
-This command installs the official TensorFlow and CUDA libraries for Python. At the end of the installation you should be capable of running Keras model training on GPU without any other effort.
-
-NOTE: at the moment this is probably the only way for using latest TensorFlow releases (>2.10) on CUDA from Windows OS by using Docker Desktop with WSL2 integration, that is exactly my case.
