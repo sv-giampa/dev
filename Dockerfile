@@ -52,19 +52,16 @@ RUN service ssh start
 RUN ssh-keygen -b 4096 -f /root/.ssh/id_rsa -N '' << y
 RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
+# basic data science and engineering utilities
 RUN /apt_install graphviz
-RUN pip install pandas numpy matplotlib seaborn
-RUN pip install torch torchvision torchaudio
-RUN pip install scikit-learn scipy umap-learn
-RUN pip install rasterio librosa
-RUN pip install pyspark
+RUN pip install pandas numpy matplotlib seaborn scikit-learn scipy
+#RUN pip install rasterio librosa
+#RUN pip install torch
+#RUN pip install torch torchvision torchaudio
 
 # install code-server
 RUN /apt_install curl
 RUN curl -fsSL https://code-server.dev/install.sh | sh
-
-# # install jupyter
-# RUN pip install jupyter
 
 # executes the optional install script
 COPY ./install.sh /install.sh
