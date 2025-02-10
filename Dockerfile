@@ -13,8 +13,8 @@
 #    limitations under the License.
 
 #FROM jupyter/datascience-notebook:latest
-FROM ubuntu:22.04
-#FROM jupyter/pytorch-notebook:latest
+#FROM ubuntu:22.04
+FROM gitpod/openvscode-server:latest
 
 USER root
 WORKDIR /root
@@ -60,8 +60,8 @@ RUN pip install pandas numpy matplotlib seaborn scikit-learn scipy
 #RUN pip install torch torchvision torchaudio
 
 # install code-server
-RUN /apt_install curl
-RUN curl -fsSL https://code-server.dev/install.sh | sh
+# RUN /apt_install curl
+# RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 # executes the optional install script
 COPY ./install.sh /install.sh
@@ -73,6 +73,9 @@ RUN mkdir /projects
 RUN echo "cd /projects" >> /root/.bashrc
 RUN echo "cd /projects" >> /root/.profile
 
+# make the config directory
+RUN mkdir /config
+
 # create autorun script
 RUN touch /projects/autorun.sh
 RUN chmod 777 /projects/autorun.sh
@@ -81,14 +84,13 @@ RUN chmod 777 /projects
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
-CMD ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
 #VOLUMES
-VOLUME [ "/root/.config/code-server" ]
-VOLUME [ "/root/.local/share/code-server" ]
-VOLUME [ "/projects" ]
+VOLUME [ "/config" ]
+VOLUME [ "/home/workspace" ]
 
 WORKDIR /projects
