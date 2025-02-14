@@ -12,9 +12,7 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-#FROM jupyter/datascience-notebook:latest
-#FROM ubuntu:22.04
-FROM gitpod/openvscode-server:latest
+FROM ubuntu:22.04
 
 USER root
 WORKDIR /root
@@ -23,7 +21,7 @@ COPY --chmod=777 apt_install /apt_install
 
 # install utility software packages
 RUN /apt_install software-properties-common
-RUN /apt_install inetutils-ping net-tools wget
+RUN /apt_install inetutils-ping net-tools wget curl
 RUN /apt_install htop screen zip nano
 	
 # install and configure git
@@ -54,14 +52,12 @@ RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
 # basic data science and engineering utilities
 RUN /apt_install graphviz
-RUN pip install pandas numpy matplotlib seaborn scikit-learn scipy
-#RUN pip install rasterio librosa
-#RUN pip install torch
-#RUN pip install torch torchvision torchaudio
+RUN pip install pandas numpy matplotlib seaborn scikit-learn scipy ipykernel ipython
 
 # install code-server
-# RUN /apt_install curl
-# RUN curl -fsSL https://code-server.dev/install.sh | sh
+RUN curl -fsSL https://code-server.dev/install.sh | sh
+COPY ./run_code_server.sh /run_code_server.sh
+RUN chmod 777 /run_code_server.sh
 
 # executes the optional install script
 COPY ./install.sh /install.sh
@@ -69,28 +65,24 @@ RUN chmod 777 /install.sh
 RUN /install.sh
 
 # create projects directory, set it as working dir for shells
-RUN echo "cd /home/workspace" >> /root/.bashrc
-RUN echo "cd /home/workspace" >> /root/.profile
-
-# make the config directory
-RUN mkdir /config
+RUN mkdir /projects
+RUN echo "cd /projects" >> /root/.bashrc
+RUN echo "cd /projects" >> /root/.profile
 
 # create autorun script
-RUN touch /home/workspace/autorun.sh
-RUN chmod 777 /home/workspace/autorun.sh
-RUN chmod 777 /home/workspace
+RUN touch /projects/autorun.sh
+RUN chmod 777 /projects/autorun.sh
+RUN chmod 777 /projects
 
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/entrypoint.sh"]
 
+# setup ennvironment
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-ENV BASE_URL=/
-
-#VOLUMES
-VOLUME [ "/config" ]
-VOLUME [ "/home/workspace" ]
-
 WORKDIR /projects
+
+# volumes
+VOLUME [ "/projects" ]
