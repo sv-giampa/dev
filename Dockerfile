@@ -38,18 +38,6 @@ ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/' >> ~/.bashrc
 RUN /apt_install gradle maven
 
-# # Configure SSH daemon
-RUN /apt_install openssh-server
-RUN if ! [ -d /var/run/sshd ]; then mkdir /var/run/sshd; fi
-RUN echo 'root:password!!' | chpasswd
-RUN sed -i 's/^[# ]*PermitRootLogin .*$/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
-RUN sed -i 's/^[# ]*PubkeyAuthentication .*$/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
-RUN service ssh start
-
-# generate ssh keys for all instances of this image (useful for building SSH clusters on docker compose)
-RUN ssh-keygen -b 4096 -f /root/.ssh/id_rsa -N '' << y
-RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
-
 # basic data science and engineering utilities
 RUN /apt_install graphviz
 RUN pip install pandas numpy matplotlib seaborn scikit-learn scipy ipykernel ipython
@@ -59,6 +47,14 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh
 COPY ./run_code_server.sh /run_code_server.sh
 RUN chmod 777 /run_code_server.sh
 
+# Configure SSH daemon
+RUN /apt_install openssh-server
+RUN if [ ! -d /var/run/sshd ]; then mkdir /var/run/sshd; fi
+#RUN echo 'root:password!!' | chpasswd
+RUN sed -i 's/^[# ]*PermitRootLogin .*$/PermitRootLogin prohibit-password/g' /etc/ssh/sshd_config
+RUN sed -i 's/^[# ]*PubkeyAuthentication .*$/PubkeyAuthentication yes/g' /etc/ssh/sshd_config
+RUN service ssh start
+
 # executes the optional install script
 COPY ./install.sh /install.sh
 RUN chmod 777 /install.sh
@@ -66,8 +62,8 @@ RUN /install.sh
 
 # create projects directory, set it as working dir for shells
 RUN mkdir /projects
-RUN echo "cd /projects" >> /root/.bashrc
-RUN echo "cd /projects" >> /root/.profile
+RUN echo "cd /projects" >> ~/.bashrc
+RUN echo "cd /projects" >> ~/.profile
 
 # create autorun script
 RUN touch /projects/autorun.sh

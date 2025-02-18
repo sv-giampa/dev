@@ -1,4 +1,5 @@
 curl -fsSL https://code-server.dev/install.sh | sh
+
 code-server /projects \
     --disable-workspace-trust \
     --bind-addr 0.0.0.0 \
