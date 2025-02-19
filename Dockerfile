@@ -67,11 +67,6 @@ RUN /install.sh
 ARG WORKSPACE="/projects"
 RUN mkdir $WORKSPACE
 
-# create autorun script
-RUN touch $WORKSPACE/autorun.sh
-RUN chmod 777 $WORKSPACE/autorun.sh
-RUN chmod 777 $WORKSPACE
-
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh

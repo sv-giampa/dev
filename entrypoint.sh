@@ -45,6 +45,11 @@ ln -s $WORKSPACE/.vscode-server ~/.vscode-server
 # run autorun script on container startup
 if [ -f $WORKSPACE/autorun.sh ]; then
     $WORKSPACE/autorun.sh &
+else
+    # if autorun.sh does not exist, create it
+    touch $WORKSPACE/autorun.sh
+    chmod 777 $WORKSPACE/autorun.sh
+    chmod 777 $WORKSPACE
 fi
 
 # run ssh daemon for building ssh clusters
