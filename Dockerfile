@@ -23,6 +23,9 @@ COPY --chmod=777 apt_install /apt_install
 RUN /apt_install software-properties-common
 RUN /apt_install inetutils-ping net-tools wget curl
 RUN /apt_install htop screen zip nano
+
+# install docker client; it needs volume mount for the host /var/run/docker.dock, only if docker is needed
+RUN /apt_install docker.io
 	
 # install and configure git
 RUN /apt_install git
