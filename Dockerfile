@@ -64,18 +64,16 @@ RUN chmod 777 /install.sh
 RUN /install.sh
 
 # create projects directory, set it as working dir for shells
-ARG WORKSPACE="/projects"
-RUN mkdir $WORKSPACE
+ENV WORKSPACE="/projects"
 
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
-CMD ["/entrypoint.sh", "$WORKSPACE"]
+CMD ["/entrypoint.sh"]
 
 # setup ennvironment
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-WORKDIR $WORKSPACE
 
 # volumes
-VOLUME [ "$WORKSPACE" ]
+VOLUME [ "${WORKSPACE}" ]

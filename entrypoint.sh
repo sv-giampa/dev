@@ -1,19 +1,37 @@
 #!/bin/sh
 nvidia-smi
 
-WORKSPACE=$1
+#export WORKSPACE=$1
 
+echo WORKSPACE=$WORKSPACE
+
+# create workspace if it does not exist
+if [ ! -d $WORKSPACE ]; then
+    mkdir $WORKSPACE
+fi
+
+# change current directory to workspace
+cd $WORKSPACE
+
+# setup workspace as starting workdir for shell
 echo "cd $WORKSPACE" >> ~/.bashrc
 echo "cd $WORKSPACE" >> ~/.profile
 
-# persist container SSH fingerprint on workspace
-if [ ! -f $WORKSPACE/.ssh/ssh_host_rsa_key.pub ]; then
-    cp /etc/ssh/ssh_host_rsa_key.pub $WORKSPACE/.ssh/ssh_host_rsa_key.pub;
+if [ $UID -e 0 ]; then
+    # persist container SSH fingerprints on workspace
+    if [ ! -d $WORKSPACE/.ssh/etc_ssh ]; then
+        cp -r /etc/ssh $WORKSPACE/.ssh/etc_ssh;
+    fi
+    if [ -d /etc/ssh ]; then
+        rm -rf /etc/ssh; 
+    fi
+    ln -s $WORKSPACE/.ssh/etc_ssh /etc/ssh;
+else
+    echo """
+        [WARNING]   Cannot persist container fingerprints in /etc/ssh, as root user is needed. 
+                    Mount an external volume in /etc/ssh for persisting fingerprints, if you need to.
+    """
 fi
-if [ -f /etc/ssh/ssh_host_rsa_key.pub]; then 
-    rm -f /etc/ssh/ssh_host_rsa_key.pub; 
-fi
-ln -s $WORKSPACE/.ssh/ssh_host_rsa_key.pub /etc/ssh/ssh_host_rsa_key.pub;
 
 # generate SSH key if not present
 if [ ! -f ~/.ssh/id_rsa ]; then
@@ -22,9 +40,9 @@ if [ ! -f ~/.ssh/id_rsa ]; then
 fi
 
 # link SSH public key and authorized-keys to the workspace
-if [ -f $WORKSPACE/id_rsa.pub ]; then rm -f $WORKSPACE/id_rsa.pub; fi
+if [ -f $WORKSPACE/.ssh/id_rsa.pub ]; then rm -f $WORKSPACE/.ssh/id_rsa.pub; fi
 ln -s ~/.ssh/id_rsa.pub $WORKSPACE/.ssh/id_rsa.pub
-if [ -f $WORKSPACE/authorized_keys ]; then rm -f $WORKSPACE/authorized_keys; fi
+if [ -f $WORKSPACE/.ssh/authorized_keys ]; then rm -f $WORKSPACE/.ssh/authorized_keys; fi
 ln -s ~/.ssh/authorized_keys $WORKSPACE/.ssh/authorized_keys
 
 # set correct permissions on .ssh folder
@@ -56,7 +74,7 @@ fi
 /usr/sbin/sshd -D &
 
 # upgrade and run code-server
-/run_code_server.sh ${@:2} &
+/run_code_server.sh ${@} &
 
 # keep entrypoint script running
 while true; do sleep 100s; done
