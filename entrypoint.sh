@@ -17,7 +17,7 @@ cd $WORKSPACE
 echo "cd $WORKSPACE" >> ~/.bashrc
 echo "cd $WORKSPACE" >> ~/.profile
 
-if [ $UID -e 0 ]; then
+if [ $(id -u) -eq 0 ]; then
     # persist container SSH fingerprints on workspace
     if [ ! -d $WORKSPACE/.ssh/etc_ssh ]; then
         cp -r /etc/ssh $WORKSPACE/.ssh/etc_ssh;
