@@ -64,24 +64,23 @@ RUN chmod 777 /install.sh
 RUN /install.sh
 
 # create projects directory, set it as working dir for shells
-RUN mkdir /projects
-RUN echo "cd /projects" >> ~/.bashrc
-RUN echo "cd /projects" >> ~/.profile
+ARG WORKSPACE="/projects"
+RUN mkdir $WORKSPACE
 
 # create autorun script
-RUN touch /projects/autorun.sh
-RUN chmod 777 /projects/autorun.sh
-RUN chmod 777 /projects
+RUN touch $WORKSPACE/autorun.sh
+RUN chmod 777 $WORKSPACE/autorun.sh
+RUN chmod 777 $WORKSPACE
 
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
-CMD ["/entrypoint.sh"]
+CMD ["/entrypoint.sh", "$WORKSPACE"]
 
 # setup ennvironment
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
-WORKDIR /projects
+WORKDIR $WORKSPACE
 
 # volumes
-VOLUME [ "/projects" ]
+VOLUME [ "$WORKSPACE" ]
