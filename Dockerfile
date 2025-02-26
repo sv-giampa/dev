@@ -31,15 +31,19 @@ RUN /apt_install docker.io
 RUN /apt_install git
 RUN DEBIAN_FRONTEND=noninteractive git config --global commit.gpgsign false
 
-# install Python
-RUN /apt_install python3 python3-pip python3-venv
-RUN python3 -m pip install --upgrade pip setuptools
-
 # install Open JDK 8
 RUN /apt_install openjdk-8-jdk
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
 RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/' >> ~/.bashrc
 RUN /apt_install gradle maven
+
+# install Python
+RUN /apt_install python3 python3-pip python3-venv
+RUN pip install --upgrade pip setuptools
+
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN /apt_install python3.11 python3.11-distutils
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 
 # basic data science and engineering utilities
 RUN /apt_install graphviz
