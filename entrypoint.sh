@@ -1,10 +1,6 @@
 #!/bin/sh
 nvidia-smi
 
-#export WORKSPACE=$1
-
-echo WORKSPACE=$WORKSPACE
-
 # create workspace if it does not exist
 if [ ! -d $WORKSPACE ]; then
     mkdir $WORKSPACE
