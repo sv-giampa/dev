@@ -17,7 +17,8 @@ FROM ubuntu:22.04
 USER root
 WORKDIR /root
 
-COPY --chmod=777 apt_install /apt_install
+COPY apt_install /apt_install
+RUN chmod 777 /apt_install
 
 # install utility software packages
 RUN /apt_install software-properties-common
