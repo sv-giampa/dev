@@ -15,15 +15,17 @@
 name: Continuous Delivery
 
 on:
+    schedule:
+        - cron: "0 1 * * 0"
     push:
-        branches: [ "main" ]
+        branches: [ "main", "workflow" ]
         paths:
         - 'Dockerfile'
         - 'install.sh'
         - 'entrypoint.sh'
         - '.github/workflows/continuous-delivery.yml'
     pull_request:
-        branches: [ "main" ]
+        branches: [ "main", "workflow" ]
         paths:
         - 'Dockerfile'
         - 'install.sh'
