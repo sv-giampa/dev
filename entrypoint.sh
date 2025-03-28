@@ -14,6 +14,7 @@ echo "cd $WORKSPACE" >> ~/.bashrc
 echo "cd $WORKSPACE" >> ~/.profile
 
 if [ $(id -u) -eq 0 ]; then
+    mkdir -p $WORKSPACE/.ssh;
     # persist container SSH fingerprints on workspace
     if [ ! -d $WORKSPACE/.ssh/etc_ssh ]; then
         cp -r /etc/ssh $WORKSPACE/.ssh/etc_ssh;
@@ -36,6 +37,7 @@ if [ ! -f ~/.ssh/id_rsa ]; then
 fi
 
 # link SSH public key and authorized-keys to the workspace
+mkdir -p $WORKSPACE/.ssh;
 if [ -f $WORKSPACE/.ssh/id_rsa.pub ]; then rm -f $WORKSPACE/.ssh/id_rsa.pub; fi
 ln -s ~/.ssh/id_rsa.pub $WORKSPACE/.ssh/id_rsa.pub
 if [ -f $WORKSPACE/.ssh/authorized_keys ]; then rm -f $WORKSPACE/.ssh/authorized_keys; fi
