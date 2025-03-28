@@ -45,7 +45,7 @@ if [ -f $WORKSPACE/.ssh/authorized_keys ]; then rm -f $WORKSPACE/.ssh/authorized
 ln -s ~/.ssh/authorized_keys $WORKSPACE/.ssh/authorized_keys
 
 # set correct permissions on .ssh folder
-chmod 700 ~/.ssh
+chmod -R 700 ~/.ssh
 
 # persist vscode server config directory into workspace volume
 if [ ! -d $WORKSPACE/.vscode-server ]; then 
