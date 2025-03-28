@@ -40,6 +40,7 @@ fi
 mkdir -p $WORKSPACE/.ssh;
 if [ -f $WORKSPACE/.ssh/id_rsa.pub ]; then rm -f $WORKSPACE/.ssh/id_rsa.pub; fi
 ln -s ~/.ssh/id_rsa.pub $WORKSPACE/.ssh/id_rsa.pub
+if [ ! -f ~/.ssh/authorized_keys ]; then touch ~/.ssh/authorized_keys; fi
 if [ -f $WORKSPACE/.ssh/authorized_keys ]; then rm -f $WORKSPACE/.ssh/authorized_keys; fi
 ln -s ~/.ssh/authorized_keys $WORKSPACE/.ssh/authorized_keys
 
