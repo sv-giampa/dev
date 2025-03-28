@@ -71,6 +71,10 @@ RUN /install.sh
 # create projects directory, set it as working dir for shells
 ENV WORKSPACE="/projects"
 
+# add devconf.sh
+COPY devconf.sh /devconf.sh
+RUN chmod 777 /devconf.sh
+
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
