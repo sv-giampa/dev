@@ -6,10 +6,6 @@ if [ ! -d $WORKSPACE ]; then
     mkdir $WORKSPACE
 fi
 
-# setup devconf directory
-echo "Setting up .devconf directory"
-export DEVCONF=$(/devconf.sh | tail -1)
-
 # change current directory to workspace
 cd $WORKSPACE
 
@@ -29,16 +25,26 @@ if [ ! -f ~/.ssh/id_rsa ]; then
 fi
 
 # run ssh daemon for building ssh clusters
-echo "Starting SSH daemon"
-/usr/sbin/sshd -D &
+if [ "$DISABLE_SSH" != "1" ]; then
+    echo "Starting SSH daemon"
+    /usr/sbin/sshd -D &
+fi
 
 # upgrade and run code-server
-echo "Starting code-server"
-/run_code_server.sh ${@} &
+if [ "$DISABLE_CODESERVER" != "1" ]; then
+    echo "Starting code-server"
+    /run_code_server.sh ${@} &
+fi
+
+# create autorun script on container startup
+if [ ! -f $WORKSPACE/autorun.sh ]; then
+    echo "echo '[$WORKSPACE/autorun.sh] running'" > $WORKSPACE/autorun.sh
+    chmod 777 $WORKSPACE/autorun.sh
+fi
 
 # run autorun script
-echo "Starting $DEVCONF/autorun.sh"
-$DEVCONF/autorun.sh &
+echo "Starting $WORKSPACE/autorun.sh"
+$WORKSPACE/autorun.sh &
 
 # keep entrypoint script running
 while true; do sleep 100s; done

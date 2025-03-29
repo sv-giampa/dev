@@ -100,10 +100,6 @@ RUN /install.sh
 # create projects directory, set it as working dir for shells
 ENV WORKSPACE="/projects"
 
-# add devconf.sh
-COPY devconf.sh /devconf.sh
-RUN chmod 777 /devconf.sh
-
 # setup entrypoint
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
@@ -112,6 +108,8 @@ CMD ["/entrypoint.sh"]
 # setup ennvironment
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
+ENV DISABLE_CODESERVER=0
+ENV DISABLE_SSH=0
 
 # volumes
 VOLUME [ "${WORKSPACE}" ]
