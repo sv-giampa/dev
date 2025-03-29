@@ -48,29 +48,30 @@ RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
 RUN /apt_install graphviz
 RUN pip install pandas numpy matplotlib seaborn scikit-learn scipy ipykernel ipython
 
-ENV SCALA_VERSION=2.12.18
-ENV SPARK_VERSION=3.4.1
-ENV DELTA_VERSION=2.4.0
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+ENV SCALA_VERSION=2.13.16
+ENV SPARK_VERSION=3.5.4
+ENV DELTA_VERSION=3.3.0
+ENV DELTA_PACKAGE=https://repo1.maven.org/maven2/io/delta/delta-spark_2.13/${DELTA_VERSION}/delta-spark_2.13-${DELTA_VERSION}.jar
 
-# Aggiorna i pacchetti e installa le dipendenze necessarie
-RUN /apt_install openjdk-11-jdk-headless unzip wget
+# install Open JDK 17
+RUN /apt_install openjdk-17-jdk-headless unzip wget
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 
-# Scarica e installa Scala
+# install Scala
 RUN wget https://downloads.lightbend.com/scala/${SCALA_VERSION}/scala-${SCALA_VERSION}.tgz && \
     tar -xzf scala-${SCALA_VERSION}.tgz -C /usr/local && \
     rm scala-${SCALA_VERSION}.tgz && \
     ln -s /usr/local/scala-${SCALA_VERSION}/bin/scala /usr/local/bin/scala && \
     ln -s /usr/local/scala-${SCALA_VERSION}/bin/scalac /usr/local/bin/scalac
 
-# Scarica e installa Spark
+# install Spark
 RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
     tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /usr/local && \
     rm spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
     ln -s /usr/local/spark-${SPARK_VERSION}-bin-hadoop3 /usr/local/spark
 
-# Scarica il pacchetto Delta Lake
-RUN wget https://repo1.maven.org/maven2/io/delta/delta-core_2.12/${DELTA_VERSION}/delta-core_2.12-${DELTA_VERSION}.jar -P /usr/local/spark/jars/
+# install Delta Lake
+RUN wget ${DELTA_PACKAGE} -P /usr/local/spark/jars/
 
 # Imposta le variabili d'ambiente di Spark
 ENV SPARK_HOME=/usr/local/spark
