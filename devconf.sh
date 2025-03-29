@@ -49,7 +49,7 @@ link_to_devconf d /etc/ssh ssh_daemon
 
 # create autorun script on container startup
 if [ ! -f $DEVCONF/autorun.sh ]; then
-    touch $DEVCONF/autorun.sh
+    echo "echo '[$DEVCONF/autorun.sh] running'" > $DEVCONF/autorun.sh
     chmod 777 $DEVCONF/autorun.sh
     chmod 777 $DEVCONF
 fi
